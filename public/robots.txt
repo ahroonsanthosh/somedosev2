@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://somedosecoffee.ie/sitemap.xml
+Sitemap: https://ahroonsanthosh.github.io/somedosev2/sitemap.xml

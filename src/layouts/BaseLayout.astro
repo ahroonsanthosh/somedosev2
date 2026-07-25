@@ -3,6 +3,8 @@ import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { getCollection } from "astro:content";
+import frauncesUrl from "../styles/fonts/fraunces-variable.woff2?url";
+import spaceMonoUrl from "../styles/fonts/space-mono-400.woff2?url";
 
 interface Props {
   title: string;
@@ -14,12 +16,16 @@ const settingsEntries = await getCollection("settings");
 const settings = settingsEntries[0].data;
 const metaDescription = description ?? settings.metaDescription;
 
+const base = import.meta.env.BASE_URL;
+const faviconHref = `${base}favicon.svg`;
+const ogImageHref = `${base}og-image.jpg`;
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "CafeOrCoffeeShop",
   name: settings.businessName,
   url: Astro.site?.toString(),
-  image: `${Astro.site}og-image.jpg`,
+  image: new URL(ogImageHref, Astro.site).toString(),
   telephone: undefined,
   email: settings.email,
   priceRange: "€€",
@@ -53,7 +59,7 @@ const jsonLd = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={faviconHref} />
     <meta name="theme-color" content="#fbf3ec" />
     <meta name="generator" content={Astro.generator} />
 
@@ -66,7 +72,7 @@ const jsonLd = {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).toString()} />
-    <meta property="og:image" content={new URL("/og-image.jpg", Astro.site).toString()} />
+    <meta property="og:image" content={new URL(ogImageHref, Astro.site).toString()} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_IE" />
@@ -75,10 +81,10 @@ const jsonLd = {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={metaDescription} />
-    <meta name="twitter:image" content={new URL("/og-image.jpg", Astro.site).toString()} />
+    <meta name="twitter:image" content={new URL(ogImageHref, Astro.site).toString()} />
 
-    <link rel="preload" href="/fonts/fraunces-variable.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/space-mono-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={frauncesUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={spaceMonoUrl} as="font" type="font/woff2" crossorigin />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>

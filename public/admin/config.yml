@@ -1,13 +1,16 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: ahroonsanthosh/somedosev2
   branch: main
+  base_url: https://your-oauth-proxy.example.com
+  auth_endpoint: auth
 
 media_folder: "public/uploads"
-public_folder: "/uploads"
+public_folder: "/somedosev2/uploads"
 
-site_url: https://somedosecoffee.ie
-display_url: https://somedosecoffee.ie
-logo_url: /favicon.svg
+site_url: https://ahroonsanthosh.github.io/somedosev2/
+display_url: https://ahroonsanthosh.github.io/somedosev2/
+logo_url: /somedosev2/favicon.svg
 
 locale: "en"
 

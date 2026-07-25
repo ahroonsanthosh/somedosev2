@@ -11,10 +11,28 @@ at `/admin`.
 - **Content collections** (`src/content/`) as the data layer — also what the
   CMS admin reads and writes.
 - **Decap CMS** (`public/admin/`) — a free, git-backed CMS UI. No database,
-  no server: it commits straight to this repo.
-- Self-hosted fonts (Fraunces, Caveat, Space Mono) in `public/fonts/`.
+  no server of its own: it commits straight to this repo.
+- Self-hosted fonts (Fraunces, Caveat, Space Mono) in `src/styles/fonts/`.
 - Photos in `src/assets/photos/` — processed automatically by Astro's image
   pipeline (AVIF/WebP, responsive `srcset`).
+
+## Deployment — GitHub Pages
+
+This repo is configured for **GitHub Pages** (`.github/workflows/deploy.yml`),
+not Netlify. `astro.config.mjs` sets `site`/`base` for
+`https://ahroonsanthosh.github.io/somedosev2/`. One manual step is required
+since it isn't available through the API this was built with:
+
+1. In the repo: **Settings → Pages → Build and deployment → Source →
+   "GitHub Actions"**.
+2. Push to `main` (or re-run the "Deploy to GitHub Pages" workflow manually
+   from the Actions tab) — it builds and publishes automatically from there.
+
+If you ever attach a custom domain or move to a host that serves from the
+root (Vercel, Cloudflare Pages), update `site`/`base` in `astro.config.mjs`
+accordingly — the whole site is base-path-safe (fonts, favicon, OG image,
+canonical URLs all resolve through `import.meta.env.BASE_URL`, not
+hardcoded root-absolute paths), so it survives a subpath either way.
 
 ## Editing content
 
@@ -27,25 +45,26 @@ at `/admin`.
 - `src/content/timeline/*.json` — the "our story" chapters. Leave `image`
   blank to show the wave badge instead of a photo.
 
-Commit the change, push, redeploy. Any git-based host will pick it up.
+Commit the change, push — the GitHub Actions workflow rebuilds and
+redeploys automatically.
 
 ### Option B — the visual admin at `/admin`
 
-Non-technical edits (hours, a price, a blurb) take under a minute:
+`public/admin/config.yml` is wired to Decap CMS's **GitHub backend** (not
+`git-gateway`/Netlify Identity, since this site isn't on Netlify). That
+backend talks to the GitHub API directly, but GitHub's OAuth flow needs a
+small server-side token exchange — something GitHub Pages itself can't run.
+To make `/admin` actually log in, stand up a tiny OAuth proxy (a few free,
+one-file options exist — e.g. a Cloudflare Worker or Vercel/Netlify function
+running something like `decap-cms-oauth-provider` — deploy takes a couple of
+minutes) and point `base_url` in `config.yml` at it. Until that's done, the
+JSON files (Option A) are the working path for edits.
 
-1. Deploy this site to **Netlify** (any static host works for the site
-   itself, but the CMS admin's zero-config login only works with Netlify).
-2. In the Netlify dashboard: **Site configuration → Identity → Enable
-   Identity**, then **Services → Git Gateway → Enable Git Gateway**.
-3. Invite the site owner as an Identity user (Identity tab → Invite user).
-4. They log in at `yoursite.com/admin`, edit hours/prices/copy in a form,
-   and hit Publish — it commits straight to this repo and redeploys.
-
-No database, no separate CMS hosting bill. `public/admin/config.yml` defines
-what's editable; it maps directly to the content collections above. New
-photos dropped into `src/assets/photos/` need a developer to add them (the
-CMS lets editors *choose* among existing photos per location/chapter, not
-upload arbitrary new ones into the optimized image pipeline).
+No database, no separate CMS hosting bill beyond that one small proxy.
+`public/admin/config.yml` maps directly to the content collections above.
+New photos dropped into `src/assets/photos/` need a developer to add them
+(the CMS lets editors *choose* among existing photos per location/chapter,
+not upload arbitrary new ones into the optimized image pipeline).
 
 ## Development
 
